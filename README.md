@@ -2,13 +2,8 @@
 
 ## DESCRIPTION
 
-This plugin is for use with [Cordova](http://incubator.apache.org/cordova/), and allows your application to receive push notifications on Amazon Fire OS, Android, iOS, Windows Phone and Windows8 devices.
-* The Amazon Fire OS implementation uses [Amazon's ADM(Amazon Device Messaging) service](https://developer.amazon.com/sdk/adm.html).
+This plugin is for use with [Cordova](http://incubator.apache.org/cordova/), and allows your application to receive push notifications on Android.
 * The Android implementation uses [Google's GCM (Google Cloud Messaging) service](http://developer.android.com/guide/google/gcm/index.html).
-* The BlackBerry 10 version  uses [blackberry push service](https://developer.blackberry.com/devzone/develop/platform_services/push_service_overview.html).
-* The iOS version is based on [Apple APNS Notifications](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html).
-* The WP8 implementation is based on [MPNS](http://msdn.microsoft.com/en-us/library/windowsphone/develop/ff402558(v=vs.105).aspx).
-* Windows8 uses [Microsoft WNS Notifications](http://msdn.microsoft.com/en-us/library/windows/apps/hh913756.aspx).
 
 **Important** - Push notifications are intended for real devices. They are not tested for WP8 Emulator. The registration process will fail on the iOS simulator. Notifications can be made to work on the Android Emulator, however doing so requires installation of some helper libraries, as outlined [here,](http://www.androidhive.info/2012/10/android-push-notifications-using-google-cloud-messaging-gcm-php-and-mysql/) under the section titled "Installing helper libraries and setting up the Emulator".
 
@@ -28,7 +23,7 @@ This plugin is for use with [Cordova](http://incubator.apache.org/cordova/), and
 
 	The MIT License
 
-	Copyright (c) 2012 Adobe Systems, inc.
+	portions Copyright (c) 2012 Adobe Systems, inc.
 	portions Copyright (c) 2012 Olivier Louvignes
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -53,67 +48,6 @@ This plugin is for use with [Cordova](http://incubator.apache.org/cordova/), and
 
 
 ##<a name="manual_installation"></a>Manual Installation
-
-### Manual Installation for Amazon Fire OS
-
-1) Install the ADM library
-
-- Download the [Amazon Mobile App SDK](https://developer.amazon.com/public/resources/development-tools/sdk) and unzip.
-- Create a folder called `ext_libs` in your project's `platforms/amazon-fireos` folder.
-- Copy `amazon-device-messaging-x.x.x.jar` into the `ext_libs` folder above.
-- Create a new text file called `ant.properties` in the `platforms/amazon-fireos` folder, and add a java.compiler.classpath entry pointing at the library. For example: `java.compiler.classpath=./ext_libs/amazon-device-messaging-1.0.1.jar`
-
-
-2) Copy the contents of the Push Notification Plugin's `src/amazon/com` folder to your project's `platforms/amazon-fireos/src/com` folder.
-
-3) Modify your `AndroidManifest.xml` and add the following lines to your manifest tag:
-
-```xml
-<permission android:name="$PACKAGE_NAME.permission.RECEIVE_ADM_MESSAGE" android:protectionLevel="signature" />
-<uses-permission android:name="$PACKAGE_NAME.permission.RECEIVE_ADM_MESSAGE" />
-<uses-permission android:name="com.amazon.device.messaging.permission.RECEIVE" />
-<uses-permission android:name="android.permission.WAKE_LOCK" />
-```
-
-4) Modify your `AndroidManifest.xml` and add the following **activity**, **receiver** and **service** tags to your **application** section.
-
-```xml
-<amazon:enable-feature android:name="com.amazon.device.messaging" android:required="true"/>
-<service android:exported="false" android:name="com.amazon.cordova.plugin.ADMMessageHandler" />
-<activity android:name="com.amazon.cordova.plugin.ADMHandlerActivity" />
-<receiver android:name="com.amazon.cordova.plugin.ADMMessageHandler$Receiver" android:permission="com.amazon.device.messaging.permission.SEND">
-	<intent-filter>
-        	<action android:name="com.amazon.device.messaging.intent.REGISTRATION" />
-                <action android:name="com.amazon.device.messaging.intent.RECEIVE" />
-                <category android:name="$PACKAGE_NAME" />
-	</intent-filter>
-</receiver>
-```
-
-5) If you are using Cordova 3.4.0 or earlier, modify your `AndroidManifest.xml` and add "amazon" XML namespace to <manifest> tag:
-
-```xml
-xmlns:amazon="http://schemas.amazon.com/apk/res/android"
-```
-
-6) Modify `res/xml/config.xml` to add a reference to PushPlugin:
-
-```xml
-<feature name="PushPlugin" >
-	<param name="android-package" value="com.amazon.cordova.plugin.PushPlugin"/>
-</feature>
-```
-
-7) Modify `res/xml/config.xml` to set config options to let Cordova know whether to display ADM message in the notification center or not. If not, provide the default message. By default, message will be visible in the notification. These config options are used if message arrives and app is not in the foreground (either killed or running in the background).
-
-```xml
-<preference name="showmessageinnotification" value="true" />
-<preference name="defaultnotificationmessage" value="New message has arrived!" />
-```
-
-8) Create an file called `api_key.txt` in the platforms/amazon-fireos/assets folder containing the API Key from the "Security Profile Android/Kindle Settings" tab on the [Amazon Developer Portal](https://developer.amazon.com/sdk/adm.html). For detailed steps on how to register for ADM please refer to section below: [Registering your app for Amazon Device Messaging (ADM)](#registering_for_adm)
-
-
 
 ### Manual Installation for Android
 
@@ -189,74 +123,6 @@ Otherwise a new activity instance, with a new webview, will be created when acti
 <script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
 ```
 
-### Manual Installation for iOS
-
-Copy the following files to your project's Plugins folder:
-
-```
-AppDelegate+notification.h
-AppDelegate+notification.m
-PushPlugin.h
-PushPlugin.m
-```
-
-Add a reference for this plugin to the plugins section in `config.xml`:
-
-```xml
-<feature name="PushPlugin">
-  <param name="ios-package" value="PushPlugin" />
-</feature>
-```
-
-Add the `PushNotification.js` script to your assets/www folder (or javascripts folder, wherever you want really) and reference it in your main index.html file.
-
-```html
-<script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
-```
-
-### Manual Installation for WP8
-
-Copy the following files to your project's Commands folder and add it to the VS project:
-
-```
-PushPlugin.cs
-```
-
-Add a reference to this plugin in `config.xml`:
-
-```xml
-<feature name="PushPlugin">
-  <param name="wp-package" value="PushPlugin" />
-</feature>
-```
-
-Add the `PushNotification.js` script to your assets/www folder (or javascripts folder, wherever you want really) and reference it in your main index.html file.
-```html
-<script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
-```
-
-Do not forget to reference the `cordova.js` as well.
-
-<script  type="text/javascript" charset="utf-8" src="cordova.js"></script>
-
-In your Visual Studio project add reference to the `Newtonsoft.Json.dll` as well - it is needed for serialization and deserialization of the objects.
-
-Also you need to enable the **"ID_CAP_PUSH_NOTIFICATION"** capability in **Properties->WMAppManifest.xml** of your project.
-
-### Manual Installation for Windows8
-
-Add the `src/windows8/PushPluginProxy.js` script to your `www` folder and reference it in your main index.html file.
-```html
-<script type="text/javascript" charset="utf-8" src="PushPluginProxy.js"></script>
-```
-
-Do not forget to reference the `cordova.js` as well.
-
-<script  type="text/javascript" charset="utf-8" src="cordova.js"></script>
-
-To receive toast notifications additional [toastCapable=’true’](http://msdn.microsoft.com/en-us/library/windows/apps/hh781238.aspx) attribute is required to be manually added in manifest file.
-
-
 
 ##<a name="automatic_installation"></a>Automatic Installation
 
@@ -271,7 +137,7 @@ The plugin can be installed via the Cordova command line interface:
 1) Navigate to the root folder for your phonegap project. 2) Run the command.
 
 ```sh
-cordova plugin add https://github.com/phonegap-build/PushPlugin.git
+cordova plugin add https://github.com/dpfrLab/PushPlugin.git
 ```
 
 ### Phonegap
@@ -281,7 +147,7 @@ The plugin can be installed using the Phonegap command line interface:
 1) Navigate to the root folder for your phonegap project. 2) Run the command.
 
 ```sh
-phonegap local plugin add https://github.com/phonegap-build/PushPlugin.git
+phonegap local plugin add https://github.com/dpfrLab/PushPlugin.git
 ```
 
 ### Plugman
@@ -330,19 +196,6 @@ if ( device.platform == 'android' || device.platform == 'Android' || device.plat
         "senderID":"replace_with_sender_id",
         "ecb":"onNotification"
     });
-} else if ( device.platform == 'blackberry10'){
-    pushNotification.register(
-    successHandler,
-    errorHandler,
-    {
-        invokeTargetId : "replace_with_invoke_target_id",
-        appId: "replace_with_app_id",
-        ppgUrl:"replace_with_ppg_url", //remove for BES pushes
-        ecb: "pushNotificationHandler",
-        simChangeCallback: replace_with_simChange_callback,
-        pushTransportReadyCallback: replace_with_pushTransportReady_callback,
-        launchApplicationOnPush: true
-    });
 } else {
     pushNotification.register(
     tokenHandler,
@@ -360,13 +213,7 @@ On success, you will get a call to tokenHandler (iOS), onNotification (Android a
 
 ***Note***
 
-- **Amazon Fire OS**:  "ecb" MUST be provided in order to get callback notifications. If you have not already registered with Amazon developer portal,you will have to obtain credentials and api_key for your app. This is described more in detail in the [Registering your app for Amazon Device Messaging (ADM)](#registering_for_adm) section below.
-
 - **Android**: If you have not already done so, you'll need to set up a Google API project, to generate your senderID. [Follow these steps](http://developer.android.com/guide/google/gcm/gs.html) to do so. This is described more fully in the **Testing** section below. In this example, be sure and substitute your own senderID. Get your senderID by signing into to your [google dashboard](https://code.google.com/apis/console/). The senderID is found at *Overview->Dashboard->Project Number*.
-
-- **BlackBerry10**: "ecb" MUST be provided to get notified of incoming push notifications. Also note, if doing a public consumer (BIS) push, you need to manually add the _sys_use_consumer_push permission to config.xml. `<rim:permit system="true">_sys_use_consumer_push</rim:permit>`. In order to receieve notifications, an invoke target must be [setup](http://developer.blackberry.com/html5/documentation/v2_1/rim_invoke-target.html) for push. See [BlackBerry Push Service](http://developer.blackberry.com/html5/apis/v2_1/blackberry.push.pushservice.html) for additional information about blackberry push options.
-
-
 
 
 #### successHandler
@@ -389,7 +236,7 @@ function errorHandler (error) {
 }
 ```
 
-#### ecb (Amazon Fire OS, Android and iOS)
+#### ecb (Android and iOS)
 Event callback that gets called when your device receives a notification
 
 ```js
@@ -414,7 +261,7 @@ function onNotificationAPN (event) {
 ```
 
 ```js
-// Android and Amazon Fire OS
+// Android
 function onNotification(e) {
 	$("#app-status-ul").append('<li>EVENT -> RECEIVED:' + e.event + '</li>');
 
@@ -474,29 +321,8 @@ function onNotification(e) {
 }
 ```
 
-```js
-// BlackBerry10
-function pushNotificationHandler(pushpayload) {
-    var contentType = pushpayload.headers["Content-Type"],
-        id = pushpayload.id,
-        data = pushpayload.data;//blob
-
-    // If an acknowledgement of the push is required (that is, the push was sent as a confirmed push
-    // - which is equivalent terminology to the push being sent with application level reliability),
-    // then you must either accept the push or reject the push
-    if (pushpayload.isAcknowledgeRequired) {
-        // In our sample, we always accept the push, but situations might arise where an application
-        // might want to reject the push (for example, after looking at the headers that came with the push
-        // or the data of the push, we might decide that the push received did not match what we expected
-        // and so we might want to reject it)
-        pushpayload.acknowledge(true);
-    }
-};
-```
 
 Looking at the above message handling code for Android/Amazon Fire OS, a few things bear explanation. Your app may receive a notification while it is active (INLINE). If you background the app by hitting the Home button on your device, you may later receive a status bar notification. Selecting that notification from the status will bring your app to the front and allow you to process the notification (BACKGROUND). Finally, should you completely exit the app by hitting the back button from the home page, you may still receive a notification. Touching that notification in the notification tray will relaunch your app and allow you to process the notification (COLDSTART). In this case the **coldstart** flag will be set on the incoming event. You can look at the **foreground** flag on the event to determine whether you are processing a background or an in-line notification. You may choose, for example to play a sound or show a dialog only for inline or coldstart notifications since the user has already been alerted via the status bar.
-
-For Amazon Fire OS, offline message can also be received when app is launched via carousel or by tapping on app icon from apps. In either case once app delivers the offline message to JS, notification will be cleared.
 
 Since the Android and Amazon Fire OS notification data models are much more flexible than that of iOS, there may be additional elements beyond **message**. You can access those elements and any additional ones via the **payload** element. This means that if your data model should change in the future, there will be no need to change and recompile the plugin.
 
@@ -526,7 +352,7 @@ pushNotification.setApplicationIconBadgeNumber(successCallback, errorCallback, b
 
 The `badgeCount` is an integer indicating what number should show up in the badge. Passing 0 will clear the badge.
 
-#### unregister (Amazon Fire OS, Android and iOS)
+#### unregister (Android and iOS)
 You will typically call this when your app is exiting, to cleanup any used resources. Its not strictly necessary to call it, and indeed it may be desireable to NOT call it if you are debugging your intermediarry push server. When you call unregister(), the current token for a particular device will get invalidated, and the next call to register() will return a new token. If you do NOT call unregister(), the last token will remain in effect until it is invalidated for some reason at the GCM/ADM side. Since such invalidations are beyond your control, its recommended that, in a production environment, that you have a matching unregister() call, for every call to register(), and that your server updates the devices' records each time.
 
 ```js
@@ -747,14 +573,6 @@ If you run this demo using the emulator you will not receive notifications from 
 
 While the data model for iOS is somewhat fixed, it should be noted that GCM is far more flexible. The Android implementation in this plugin, for example, assumes the incoming message will contain a '**message**' and a '**msgcnt**' node. This is reflected in both the plugin (see GCMIntentService.java) as well as in provided example ruby script (pushGCM.rb). Should you employ a commercial service, their data model may differ. As mentioned earlier, this is where you will want to take a look at the **payload** element of the message event. In addition to the cannonical message and msgcnt elements, any additional elements in the incoming JSON object will be accessible here, obviating the need to edit and recompile the plugin. Many thanks to Tobias Hößl for this functionality!
 
-### Testing ADM Notifications for Amazon Fire OS
-
-####<a name="registering_for_adm"></a>Register your app for Amazon Device Messaging (ADM)
-
-1. Create a developer account on [Amazon Developer Portal](https://developer.amazon.com/home.html)
-2. [Add a new app](https://developer.amazon.com/application/new.html) and turn Device Messaging switch to ON. Create a sample app for your device so you have the app name and package name used to register online.
-3. Create [Security Profile](https://developer.amazon.com/iba-sp/overview.html) and obtain [ADM credentials](https://developer.amazon.com/sdk/adm/credentials.html) for your app.
-
 ####  Sending a test notification
 
 1. Inside the plugin's examples/server folder, open the `pushADM.js` NodeJS script with a text editor. (You should already have NodeJS installed).
@@ -772,20 +590,6 @@ You can see how to create one from MSDN Samples:
 - [Send Toast Notifications (MSDN Sample)](http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202967(v=vs.105).aspx#BKMK_SendingaToastNotification)
 - [Send Tile Notification (MSDN Sample)](http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202970(v=vs.105).aspx#BKMK_SendingaTileNotification)
 - [Send Raw Notification (MSDN Sample)](http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202977(v=vs.105).aspx#BKMK_RunningtheRawNotificationSample)
-
-
-### Sending push notifications on BlackBerry10
-If doing a BES push, ensure the device has been enterprise activated, has network access (wifi or sim) and your app is installed in the work permiter. You also need to make sure the _sys_use_consumer_push permission is NOT specified in the config.xml. This permission is meant only for public consumer BIS pushes and will cause an error when registering.
-
-If doing a public consumer BIS push, please ensure the _sys_use_consumer_push permission is added to the config.xml.
-
-Both types of pushes require the use of a Push Initiator.
-
-- [App based BIS Initiator](https://github.com/blackberry/BB10-WebWorks-Samples/tree/master/pushCaptureBasics/pushInitiator)
-- [Web based BIS Initiator (Push Service SDK)](https://developer.blackberry.com/services/push/)
-- [Web based BES Initiator](https://github.com/blackberry/BES10-WebWorks/tree/master/SimplePushTest/WW2.0/server)
-
-For additional information on BlackBerry Push see https://developer.blackberry.com/services/push/.
 
 ### Troubleshooting and next steps
 If all went well, you should see a notification show up on each device. If not, make sure you are not being blocked by a firewall, and that you have internet access. Check and recheck the token id, the registration ID and the certificate generating process.
@@ -806,7 +610,6 @@ If you're not up to building and maintaining your own intermediary push server, 
 
 ##<a name="additional_resources"></a>Additional Resources
 
-- [Amazon Device Messaging](https://developer.amazon.com/sdk/adm/credentials.html)
 - [Apple Push Notification Services Tutorial: Part 1/2](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12)
 - [Apple Push Notification Services Tutorial: Part 2/2](http://www.raywenderlich.com/3525/apple-push-notification-services-tutorial-part-2)
 - [Google Cloud Messaging for Android](http://developer.android.com/guide/google/gcm/index.html) (Android)
