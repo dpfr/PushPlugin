@@ -72,10 +72,42 @@ static char launchNotificationKey;
     }
     
     if (appState == UIApplicationStateActive) {
-        PushPlugin *pushHandler = [self getCommandInstance:@"PushPlugin"];
-        pushHandler.notificationMessage = userInfo;
-        pushHandler.isInline = YES;
-        [pushHandler notificationReceived];
+        
+        NSString *message = nil;
+        id alert = [[userInfo objectForKey:@"aps"] objectForKey:@"alert"];
+        
+        if([alert isKindOfClass:[NSString class]]){
+            message = alert;
+        }
+        else if([alert isKindOfClass:[NSDictionary class]]){
+            message = [alert objectForKey:@"body"];
+        }
+        
+        if(message != nil){
+            // displaying the notification if there is a message
+            UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+            localNotification.userInfo = userInfo;
+            localNotification.alertBody = message;
+            
+            [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
+            
+            //self.launchNotification = userInfo;
+        }
+        else{
+            UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+            localNotification.userInfo = userInfo;
+            localNotification.alertBody = @"lala";
+            
+            [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
+            
+            
+            //end to remove
+            
+            PushPlugin *pushHandler = [self getCommandInstance:@"PushPlugin"];
+            pushHandler.notificationMessage = userInfo;
+            pushHandler.isInline = YES;
+            [pushHandler notificationReceived];
+        }
     } else {
         //save it for later
         self.launchNotification = userInfo;
