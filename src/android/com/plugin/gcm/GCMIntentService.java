@@ -64,10 +64,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 		// Extract the payload from the message
 		Bundle extras = intent.getExtras();
 		// add a local notification if there is a message
-		if (extras != null && extras.getString("message") != null && extras.getString("message").length() != 0))
+		if (extras != null && extras.getString("message") != null && extras.getString("message").length() != 0)
 		{
-      createNotification(context, extras);
-    }
+		  createNotification(context, extras);
+		}
 	}
 
 	public void createNotification(Context context, Bundle extras)
