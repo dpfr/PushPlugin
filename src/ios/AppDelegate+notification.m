@@ -90,19 +90,8 @@ static char launchNotificationKey;
             localNotification.alertBody = message;
             
             [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
-            
-            //self.launchNotification = userInfo;
         }
         else{
-            UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-            localNotification.userInfo = userInfo;
-            localNotification.alertBody = @"lala";
-            
-            [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
-            
-            
-            //end to remove
-            
             PushPlugin *pushHandler = [self getCommandInstance:@"PushPlugin"];
             pushHandler.notificationMessage = userInfo;
             pushHandler.isInline = YES;
