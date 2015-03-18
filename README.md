@@ -137,7 +137,7 @@ The plugin can be installed via the Cordova command line interface:
 1) Navigate to the root folder for your phonegap project. 2) Run the command.
 
 ```sh
-cordova plugin add https://github.com/dpfrLab/PushPlugin.git
+cordova plugin add https://github.com/dpfr/PushPlugin.git
 ```
 
 ### Phonegap
